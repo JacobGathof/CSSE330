@@ -31,6 +31,8 @@
 	<?php
 		session_start();
 		$name=$_SESSION['name'];
+		//$_SESSION['currentRoom'];
+		
 		
 	
 		$connectionInfo = array("Database"=>'Betrayal', "UID"=>'kildufje', "PWD"=>'betrayal');
@@ -38,10 +40,10 @@
 		or die("Couldn't connect");
 		
 		if(isset($_POST['characters'])){
-			$sql = sqlsrv_query($db, "Update Player Set Active = 0, Position = '0,0' Where Name = '".$name."'");
+			$sql = sqlsrv_query($db, "Update Player Set Active = 0 Where Name = '".$name."'");
 			$name = $_POST['characters'];
 			$_SESSION['name']=$name;
-			$sql = sqlsrv_query($db, "Update Player Set Active = 1, Position = NULL Where Name = '".$name."'");
+			$sql = sqlsrv_query($db, "Update Player Set Active = 1 Where Name = '".$name."'");
 		}
 	?>
 		
@@ -244,6 +246,7 @@
 		resetItemOwners();
 		//resetPositions();
 		resetPlayers();
+		$_SESSION['currentRoom'] = "";
 	}
 
 	function resetItemOwners(){
@@ -326,30 +329,48 @@
 <div id = 'getRoom'>
 	<form method="post" id="form">
 		<input type="submit"  name="getRoom" value="Get Room"><br>
-		<input type="submit"  name="rotateRoom" value="Rotate Room">
+		<input type="submit"  name="rotateRoom" value="Rotate Room"></br>
+		<input type="submit"  name="refreshRoom" value="Refresh Room"></br>
 	</form>
 
 	<?php
 		global $db;
-		if(isset($_POST['getRoom'])){
-			$query = "{call [GetRandomRoom] (?)}";
-			$value = 0;
-			$params = array(array($value, SQLSRV_PARAM_IN));
-			$output = sqlsrv_query($db, $query, $params);
-			
-			if ($output === false) {
-				die (print_r(sqlsrv_errors(), true));
-			}
-			
-			$rotations = ['0', '90', '180', '270'];
-			$room = sqlsrv_fetch_array($output, SQLSRV_FETCH_ASSOC );
-			echo "<img id = 'nextRoom' src = Rooms/" . $room['Image_Path'] . " class='rotateimg" . $rotations[$room['Rotation']] . "' style='width:200px;height:200px;>";
+		global $currentRoom;
 		
-			if(isset($_POST['getRoom'])){
-				$sql = "UPDATE Room SET Rotation = ((SELECT Rotation FROM Room WHERE Name = '" . $room['Name'] . "') + 1) % 4 WHERE Name = '" . $room['Name'] . "'";
-				$query = sqlsrv_query($db, $sql);
+		// do the query for either a random room or the current room
+		if ($currentRoom == $_SESSION['currentRoom']) {
+				$query = "{call [GetRandomRoom] (?)}";
+				$value = 0;
+				$params = array(array($value, SQLSRV_PARAM_IN));
+				$output = sqlsrv_query($db, $query, $params);
+				
+				if ($output === false) {
+					die (print_r(sqlsrv_errors(), true));
+				}
+			} else {
+				$output = sqlsrv_query($db, "SELECT * FROM Room WHERE Name = '".$_SESSION['currentRoom']."'");
 			}
+			
+		$room = sqlsrv_fetch_array($output, SQLSRV_FETCH_ASSOC );
+		
+		// display rom
+		if(isset($_POST['getRoom'])){
+			$rotations = ['0', '90', '180', '270'];
+			$_SESSION['currentRoom'] = $room['Name'];
+			echo "<img id = 'nextRoom' src = Rooms/" . $room['Image_Path'] . " class='rotateimg" . $rotations[$room['Rotation']] . "' style='width:200px;height:200px;>";
 		}
+		
+		// rotate room
+		if(isset($_POST['rotateRoom'])){
+			$sql = "UPDATE Room SET Rotation = ((SELECT Rotation FROM Room WHERE Name = '" . $room['Name'] . "') + 1) % 4 WHERE Name = '" . $room['Name'] . "'";
+			$query = sqlsrv_query($db, $sql);
+			$currentRoom = $room['Name'];
+		}
+		
+		if(isset($_POST['refreshRoom'])){
+			$_SESSION['currentRoom'] = '';
+		}
+		
 	?>
 </div> 
 
@@ -379,6 +400,7 @@
 	update();
 </script>
 
+
 <!-------------------------------------------------------->
 <!-------------------------------------------------------->
 <div id = 'getPlacedRooms'>
@@ -386,31 +408,20 @@
 		global $db;
 		$positions = '[';
 		$imagePaths = '[';
+		$rotations = '[';
 		
-		$sql = sqlsrv_query($db, "SELECT Image_Path, Position FROM Room WHERE Position IS NOT NULL");
+		$sql = sqlsrv_query($db, "SELECT Image_Path, Position, Rotation FROM Room WHERE Position IS NOT NULL");
 		while($row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC)){
 			$positions = $positions . '"' . $row['Position'] . '",';
 			$imagePaths = $imagePaths . '"' . $row['Image_Path'] . '",';
+			$rotations = $rotations . '"' . $row['Rotation'] . '",';
 		}
 		
 		$positions =  rtrim($positions, ',') . ']';
 		$imagePaths =  rtrim($imagePaths, ',') . ']';
+		$rotations =  rtrim($rotations, ',') . ']';
 		
-		echo '<script> buildTableFromDatabase(' . $positions . ',' . $imagePaths . ') </script>';
-		
-		
-		$positions = '[';
-		$imagePaths = '[';
-		$sql = sqlsrv_query($db, "SELECT * FROM Player WHERE Position IS NOT NULL");
-		while($row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC)){
-			$positions = $positions . '"' . $row['Position'] . '",';
-			$imagePaths = $imagePaths . '"' . $row['Image_Path'] . '",';
-		}
-		$positions =  rtrim($positions, ',') . ']';
-		$imagePaths =  rtrim($imagePaths, ',') . ']';
-		echo '<script> addPlayers(' . $positions . ',' . $imagePaths . ') </script>';
-		
-		
+		echo '<script> buildTableFromDatabase(' . $positions . ',' . $rotations . ',' . $imagePaths . ') </script>';
 		
 	?>
 </div> 

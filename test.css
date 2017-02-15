@@ -3,7 +3,7 @@ body {
 	font-family : Verdana; 
 }
 
-.rotateimg90 {}
+.rotateimg0 {}
 
 .rotateimg90 {
   -webkit-transform:rotate(90deg);
@@ -86,14 +86,4 @@ body {
   transform: rotate(270deg);
 }
 
-.absolute {
-	
-	position: absolute;
-	width : 20%;
-	height : 20%;
-	
-	top: 10px; 
-	left: 10px;
-	
-}
 

@@ -140,10 +140,8 @@ function rollKnowledge(){
 function expandTable(id){
 	
 	size = id.split(",");
-	console.log(size);
 	
 	while(size[0] <= minTableX){
-		console.log('first');
 		minTableX--;
 		var table = document.getElementById("BoardTable");
 		var rows = table.children;
@@ -164,7 +162,6 @@ function expandTable(id){
 	}
 	
 	while(size[0] >= maxTableX){
-		console.log('second');
 		maxTableX++;
 		
 		var table = document.getElementById("BoardTable");
@@ -190,7 +187,6 @@ function expandTable(id){
 	
 	while(size[1] <= minTableY){ // should grow the table at the bottom
 		minTableY--;
-		console.log('third');
 		
 		var doc = document.getElementById("BoardTable");
 		
@@ -217,7 +213,6 @@ function expandTable(id){
 	}
 	
 	while(size[1] >= maxTableY){ // should grow the table at the top
-		console.log('fourth');
 		maxTableY++;
 		
 		var doc = document.getElementById("BoardTable");
@@ -249,34 +244,23 @@ function foo(cell, i, j){
 	cell.onclick = function(){placeTile(""+i+","+j)};
 }
 
-function placeTile(id, imgsrc){
+function placeTile(id){
 	
-	console.log(id);
-	expandTable(id);
-	
-	var ele = document.getElementById(id);
-	
-	ele.src = "Rooms/"+imgsrc;
-	
-}
-
-
-function addPlayers(positions, imagePaths) {
-	
-	for(var i = 0; i < positions.length; i++){
-		var ele = document.getElementById(positions[i]).parentElement;
-		var img = document.createElement("img");
+	if (document.getElementById(id).src == '') {
+		console.log(id);
+		expandTable(id);
 		
-		img.className = "absolute";
-		img.src = "Characters/"+imagePaths[i];
-		ele.appendChild(img);
+		var ele = document.getElementById(id);
 		
-		console.log(imagePaths[i]);
+		ele.src = document.getElementById('nextRoom').src;
+		ele.className = document.getElementById('nextRoom').className;
 	}
 }
 
-
-function buildTableFromDatabase(positions, imagePaths) {
+function buildTableFromDatabase(positions, rotations, imagePaths) {
+	
+	console.log(positions);
+	console.log(imagePaths);
 	
 	var doc = document.getElementById("BoardTable");
 	var row = document.createElement("tr");
@@ -288,15 +272,16 @@ function buildTableFromDatabase(positions, imagePaths) {
 	img.id=""+0+","+0;
 	img.height = 100;
 	img.width = 100;
+	var angle = ['0', '90', '180', '270'];
 	
 	cell.appendChild(img);
 	row.appendChild(cell);
 	doc.appendChild(row);
 	
-	placeTile("0,0", "");
-	
 	for(var i = 0; i < positions.length; i++){
-		placeTile(positions[i], imagePaths[i]);
+		expandTable(positions[i]);
+		document.getElementById(positions[i]).src = 'Rooms/' + imagePaths[i];
+		document.getElementById(positions[i]).className = 'rotateimg' + angle[rotations[i]];
 	}
 	
 	
