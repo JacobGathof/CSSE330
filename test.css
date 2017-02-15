@@ -1,0 +1,99 @@
+body {
+	background-color : lightgray;
+	font-family : Verdana; 
+}
+
+.rotateimg90 {}
+
+.rotateimg90 {
+  -webkit-transform:rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.rotateimg180 {
+  -webkit-transform:rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.rotateimg270 {
+  -webkit-transform:rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+
+.CharSel {
+	
+	float : left;
+	width : 40%;
+	height : 20%;
+	color : black;
+	background-color : gray;
+	
+	
+}
+
+.CharBox {
+	float : left;
+	border : 1px black; 
+	
+}
+
+
+.Items{
+	
+	width : 50%;
+	height : 50%;
+	border : 1px black; 
+	background-color : blue;
+	
+}
+
+.well {
+	width: auto;
+	height : auto;
+	display:inline-block;
+}
+
+.left{
+	float : left;
+	margin : 0px;
+	
+}
+
+.round{
+	border-radius : 30px;
+}
+
+
+.rot-0 {
+  transform: rotate(0deg);
+}
+.rot-1 {
+  transform: rotate(90deg);
+}
+.rot-2 {
+  transform: rotate(180deg);
+}
+.rot-3 {
+  transform: rotate(270deg);
+}
+
+.absolute {
+	
+	position: absolute;
+	width : 20%;
+	height : 20%;
+	
+	top: 10px; 
+	left: 10px;
+	
+}
+
