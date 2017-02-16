@@ -360,6 +360,59 @@
 ?>
 
 
+<div id = 'getRoom'>
+ 	<form method="post" id="form">
+ 		<input type="submit"  name="getRoom" value="Get Room"><br>
+ 		<input type="submit"  name="rotateRoom" value="Rotate Room"></br>
+ 		<input type="submit"  name="refreshRoom" value="Refresh Room"></br>
+ 		<input id = "roomPosition" type="hidden" name="roomPosition">
+ 	</form>
+ 
+ 	<?php
+ 		global $db;
+ 		global $currentRoom;
+ 		
+ 		// do the query for either a random room or the current room
+ 		if ($currentRoom == $_SESSION['currentRoom']) {
+ 				$query = "{call [GetRandomRoom] (?)}";
+ 				$value = 0;
+ 				$params = array(array($value, SQLSRV_PARAM_IN));
+ 				$output = sqlsrv_query($db, $query, $params);
+ 				
+ 				if ($output === false) {
+ 					die (print_r(sqlsrv_errors(), true));
+ 				}
+ 			} else {
+ 				$output = sqlsrv_query($db, "SELECT * FROM Room WHERE Name = '".$_SESSION['currentRoom']."'");
+ 			}
+ 			
+ 		$room = sqlsrv_fetch_array($output, SQLSRV_FETCH_ASSOC );
+ 		
+ 		// display rom
+ 		if(isset($_POST['getRoom'])){
+ 			$rotations = ['0', '90', '180', '270'];
+ 			$_SESSION['currentRoom'] = $room['Name'];
+ 			echo "<img id = 'nextRoom' src = Rooms/" . $room['Image_Path'] . " class='rotateimg" . $rotations[$room['Rotation']] . "' style='width:200px;height:200px;>";
+ 		}
+ 		
+ 		// rotate room
+ 		if(isset($_POST['rotateRoom'])){
+ 			$sql = "UPDATE Room SET Rotation = ((SELECT Rotation FROM Room WHERE Name = '" . $room['Name'] . "') + 1) % 4 WHERE Name = '" . $room['Name'] . "'";
+ 			$query = sqlsrv_query($db, $sql);
+ 			$currentRoom = $room['Name'];
+ 		}
+ 		
+ 		if(isset($_POST['refreshRoom'])){
+ 			$sql = "UPDATE Room SET Position = '" . $_POST['roomPosition'] . "' WHERE Name = '" . $room['Name'] . "'";
+ 			$query = sqlsrv_query($db, $sql);
+ 			$_SESSION['currentRoom'] = '';
+ 		}
+ 		
+ 	?>
+ </div> 
+
+
+
 
 
 
@@ -413,6 +466,8 @@
 		
 	?>
 </div>
+
+
 
 </div>
 
