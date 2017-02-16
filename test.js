@@ -11,13 +11,6 @@ var currentSum = 0;
 var currentTile;
 
 
-$(document).ready(function(){
-	$(".tileClass").click(function(event) {
-		placeTile(event.target.id);
-		$("#thisForm").submit();
-	});
-});
-
 
 function update(){
 	
@@ -156,16 +149,13 @@ function expandTable(id){
 			
 			var row = rows[i];
 			var cell = document.createElement("td");
-			//foo(cell, minTableX, minTableY+i);
+			foo(cell, minTableX, minTableY+i);
 			
-			var img = document.createElement("input");
+			var img = document.createElement("img");
 			img.id=""+minTableX+","+(minTableY+i);
 			img.height = 100;
 			img.width = 100;
-			img.type = "image";
-			img.name = "CLICK";
-			img.value = img.id;
-			img.className="noText tileClass";
+			img.className = "def";
 			
 			cell.appendChild(img);
 			row.insertBefore(cell, row.firstChild);
@@ -182,16 +172,13 @@ function expandTable(id){
 		for(var i = 0; i < rows.length; i++){
 			var row = rows[i];
 			var cell = document.createElement("td");
-			//foo(cell, maxTableX, minTableY+i);
+			foo(cell, maxTableX, minTableY+i);
 			
-			var img = document.createElement("input");
+			var img = document.createElement("img");
 			img.id=""+maxTableX+","+(minTableY+i);
 			img.height = 100;
 			img.width = 100;
-			img.type = "image";
-			img.name = "CLICK";
-			img.value = img.id;
-			img.className="noText tileClass";
+			img.className = "def";
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -205,16 +192,14 @@ function expandTable(id){
 		for(var i = minTableX; i <= maxTableX; i++){
 			
 			var cell = document.createElement("td");
-			//foo(cell, i, minTableY);
+			foo(cell, i, minTableY);
 			
-			var img = document.createElement("input");
+			var img = document.createElement("img");
 			img.id=""+i+","+minTableY;
 			img.height = 100;
 			img.width = 100;
-			img.type = "image";
-			img.name = "CLICK";
-			img.value = img.id;
-			img.className="noText tileClass";
+			img.className = "def";
+			
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -231,16 +216,14 @@ function expandTable(id){
 		for(var i = minTableX; i <= maxTableX; i++){
 			
 			var cell = document.createElement("td");
-			//foo(cell, i, maxTableY);
+			foo(cell, i, maxTableY);
 			
-			var img = document.createElement("input");
+			
+			var img = document.createElement("img");
 			img.id=""+i+","+maxTableY;
 			img.height = 100;
 			img.width = 100;
-			img.type = "image";
-			img.name = "CLICK";
-			img.value = img.id;
-			img.className="noText tileClass";
+			img.className = "def";
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -296,17 +279,13 @@ function buildTableFromDatabase(positions, rotations, imagePaths) {
 	var row = document.createElement("tr");
 	var cell = document.createElement("td");
 			
-	//foo(cell, 0, 0);
+	foo(cell, 0, 0);
 	
-	var img = document.createElement("input");
+	var img = document.createElement("img");
 	img.id=""+0+","+0;
 	img.height = 100;
 	img.width = 100;
 	img.className = "def";
-	img.type = "image";
-	img.name = "CLICK";
-	img.value = img.id;
-	img.className="noText tileClass";
 	
 	var angle = ['0', '90', '180', '270'];
 	

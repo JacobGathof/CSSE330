@@ -110,3 +110,19 @@ body {
 }
 
 
+.topDiv{
+	
+	clear : both;
+	width: 100%;
+	height: 50%;
+	
+}
+
+.botDiv{
+	
+	clear : both;
+	width: 100%;
+	height: 50%;
+	
+}
+
