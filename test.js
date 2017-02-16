@@ -247,20 +247,18 @@ function foo(cell, i, j){
 function placeTile(id){
 	
 	if (document.getElementById(id).src == '') {
-		console.log(id);
 		expandTable(id);
 		
 		var ele = document.getElementById(id);
 		
 		ele.src = document.getElementById('nextRoom').src;
 		ele.className = document.getElementById('nextRoom').className;
+		document.getElementById('roomPosition').value = id;
+		
 	}
 }
 
 function buildTableFromDatabase(positions, rotations, imagePaths) {
-	
-	console.log(positions);
-	console.log(imagePaths);
 	
 	var doc = document.getElementById("BoardTable");
 	var row = document.createElement("tr");

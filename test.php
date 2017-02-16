@@ -331,6 +331,7 @@
 		<input type="submit"  name="getRoom" value="Get Room"><br>
 		<input type="submit"  name="rotateRoom" value="Rotate Room"></br>
 		<input type="submit"  name="refreshRoom" value="Refresh Room"></br>
+		<input id = "roomPosition" type="hidden" name="roomPosition">
 	</form>
 
 	<?php
@@ -368,6 +369,8 @@
 		}
 		
 		if(isset($_POST['refreshRoom'])){
+			$sql = "UPDATE Room SET Position = '" . $_POST['roomPosition'] . "' WHERE Name = '" . $room['Name'] . "'";
+			$query = sqlsrv_query($db, $sql);
 			$_SESSION['currentRoom'] = '';
 		}
 		
