@@ -11,6 +11,13 @@ var currentSum = 0;
 var currentTile;
 
 
+$(document).ready(function(){
+	$(".tileClass").click(function(event) {
+		placeTile(event.target.id);
+		$("#thisForm").submit();
+	});
+});
+
 
 function update(){
 	
@@ -149,12 +156,16 @@ function expandTable(id){
 			
 			var row = rows[i];
 			var cell = document.createElement("td");
-			foo(cell, minTableX, minTableY+i);
+			//foo(cell, minTableX, minTableY+i);
 			
-			var img = document.createElement("img");
+			var img = document.createElement("input");
 			img.id=""+minTableX+","+(minTableY+i);
 			img.height = 100;
 			img.width = 100;
+			img.type = "image";
+			img.name = "CLICK";
+			img.value = img.id;
+			img.className="noText tileClass";
 			
 			cell.appendChild(img);
 			row.insertBefore(cell, row.firstChild);
@@ -169,16 +180,18 @@ function expandTable(id){
 		var rows = table.children;
 		
 		for(var i = 0; i < rows.length; i++){
-			
 			var row = rows[i];
 			var cell = document.createElement("td");
-			foo(cell, maxTableX, minTableY+i);
+			//foo(cell, maxTableX, minTableY+i);
 			
-			var img = document.createElement("img");
+			var img = document.createElement("input");
 			img.id=""+maxTableX+","+(minTableY+i);
 			img.height = 100;
 			img.width = 100;
-			
+			img.type = "image";
+			img.name = "CLICK";
+			img.value = img.id;
+			img.className="noText tileClass";
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -187,22 +200,21 @@ function expandTable(id){
 	
 	while(size[1] <= minTableY){ // should grow the table at the bottom
 		minTableY--;
-		
 		var doc = document.getElementById("BoardTable");
-		
 		var row = document.createElement("tr");
-		
 		for(var i = minTableX; i <= maxTableX; i++){
 			
 			var cell = document.createElement("td");
+			//foo(cell, i, minTableY);
 			
-			foo(cell, i, minTableY);
-			
-			
-			var img = document.createElement("img");
+			var img = document.createElement("input");
 			img.id=""+i+","+minTableY;
 			img.height = 100;
 			img.width = 100;
+			img.type = "image";
+			img.name = "CLICK";
+			img.value = img.id;
+			img.className="noText tileClass";
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -214,22 +226,21 @@ function expandTable(id){
 	
 	while(size[1] >= maxTableY){ // should grow the table at the top
 		maxTableY++;
-		
 		var doc = document.getElementById("BoardTable");
-		
 		var row = document.createElement("tr");
-		
 		for(var i = minTableX; i <= maxTableX; i++){
 			
 			var cell = document.createElement("td");
+			//foo(cell, i, maxTableY);
 			
-			foo(cell, i, maxTableY);
-			
-			
-			var img = document.createElement("img");
+			var img = document.createElement("input");
 			img.id=""+i+","+maxTableY;
 			img.height = 100;
 			img.width = 100;
+			img.type = "image";
+			img.name = "CLICK";
+			img.value = img.id;
+			img.className="noText tileClass";
 			
 			cell.appendChild(img);
 			row.appendChild(cell);
@@ -244,6 +255,7 @@ function foo(cell, i, j){
 	cell.onclick = function(){placeTile(""+i+","+j)};
 }
 
+
 function placeTile(id){
 	
 	if (document.getElementById(id).src == '') {
@@ -257,6 +269,26 @@ function placeTile(id){
 	}
 }
 
+function buildPlayerPositions(positions, imagePaths) {
+	
+	console.log(positions);
+	console.log(imagePaths);
+	
+	for(var i = 0; i < positions.length; i++){	
+		var cell = document.getElementById(positions[i]).parentElement;
+		cell.className="def";
+		
+		var img = document.createElement("img");
+		img.className="foreground";
+		img.height = 50;
+		img.width = 50;
+		img.src="Characters/"+imagePaths[i];
+		
+		cell.appendChild(img);
+	}
+}
+
+
 function buildTableFromDatabase(positions, rotations, imagePaths) {
 	
 	console.log(positions);
@@ -266,12 +298,18 @@ function buildTableFromDatabase(positions, rotations, imagePaths) {
 	var row = document.createElement("tr");
 	var cell = document.createElement("td");
 			
-	foo(cell, 0, 0);
+	//foo(cell, 0, 0);
 	
-	var img = document.createElement("img");
+	var img = document.createElement("input");
 	img.id=""+0+","+0;
 	img.height = 100;
 	img.width = 100;
+	img.className = "def";
+	img.type = "image";
+	img.name = "CLICK";
+	img.value = img.id;
+	img.className="noText tileClass";
+	
 	var angle = ['0', '90', '180', '270'];
 	
 	cell.appendChild(img);
@@ -283,6 +321,4 @@ function buildTableFromDatabase(positions, rotations, imagePaths) {
 		document.getElementById(positions[i]).src = 'Rooms/' + imagePaths[i];
 		document.getElementById(positions[i]).className = 'rotateimg' + angle[rotations[i]];
 	}
-	
-	
 }

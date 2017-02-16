@@ -39,6 +39,10 @@
 		$db = sqlsrv_connect("titan.csse.rose-hulman.edu", $connectionInfo)
 		or die("Couldn't connect");
 		
+		$sql = sqlsrv_query($db, "Update Room Set Position='0,1' Where Name = 'Entrance3'");
+		$sql = sqlsrv_query($db, "Update Room Set Position='0,0' Where Name = 'Entrance2'");
+		$sql = sqlsrv_query($db, "Update Room Set Position='0,-1' Where Name = 'Entrance1'");
+		
 		if(isset($_POST['characters'])){
 			$sql = sqlsrv_query($db, "Update Player Set Active = 0 Where Name = '".$name."'");
 			$name = $_POST['characters'];
@@ -79,7 +83,6 @@
 		echo '<img class="CharBox" src="Characters/' . $imagePath . '" alt="' . $name . '" height="250" width="250">';
 	?>
 	</div>
-	
 	
 </div>	
 	
@@ -173,9 +176,11 @@
 <!-------------------Game Board Table--------------------->
 <!-------------------------------------------------------->
 <div id=tableArea class="well left">
-	<table id = "BoardTable" class="table">
+	<form method="post" id="thisForm" action="">
+		<table id = "BoardTable" class="table">
 		
-	</table>
+		</table>
+	</form>
 </div>
 	
 <!-------------------------------------------------------->
@@ -405,6 +410,9 @@
 <!-------------------------------------------------------->
 <div id = 'getPlacedRooms'>
 	<?php
+	
+		print_r($_POST);
+	
 		global $db;
 		$positions = '[';
 		$imagePaths = '[';
@@ -421,7 +429,25 @@
 		$imagePaths =  rtrim($imagePaths, ',') . ']';
 		$rotations =  rtrim($rotations, ',') . ']';
 		
-		echo '<script> buildTableFromDatabase(' . $positions . ',' . $rotations . ',' . $imagePaths . ') </script>';
+		echo '<script> buildTableFromDatabase(' . $positions . ',' . $rotations . ',' . $imagePaths . '); </script>';
+		
+		
+		
+		$positions = '[';
+		$imagePaths = '[';
+		
+		$sql = sqlsrv_query($db, "SELECT * FROM Player WHERE Active = 1");
+		while($row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC)){
+			$positions = $positions . '"' . $row['Position'] . '",';
+			$imagePaths = $imagePaths . '"' . $row['Image_Path'] . '",';
+		}
+		
+		$positions =  rtrim($positions, ',') . ']';
+		$imagePaths =  rtrim($imagePaths, ',') . ']';
+		
+		echo '<script> buildPlayerPositions(' . $positions . ',' . $imagePaths . '); </script>';
+		
+		
 		
 	?>
 </div> 

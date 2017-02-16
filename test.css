@@ -46,6 +46,16 @@ body {
 	
 }
 
+.noText{
+	color : white;
+	font-size : 1px;
+}
+
+.tileClass{
+	
+	
+}
+
 
 .Items{
 	
@@ -70,6 +80,19 @@ body {
 
 .round{
 	border-radius : 30px;
+}
+
+
+.def{
+	position : relative;
+	z-index:1;
+}
+
+.foreground{
+	position: absolute;
+	z-index:2;
+	top: 25px; 
+	left: 25px;
 }
 
 
