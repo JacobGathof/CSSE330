@@ -120,9 +120,16 @@ body {
 
 .botDiv{
 	
+	position: absolute;
+	top : 400px;
 	clear : both;
 	width: 100%;
 	height: 50%;
 	
+}
+
+.up{
+	position: relative;
+	top : -10px;
 }
 

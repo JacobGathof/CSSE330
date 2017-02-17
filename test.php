@@ -39,9 +39,7 @@
 		$db = sqlsrv_connect("titan.csse.rose-hulman.edu", $connectionInfo)
 		or die("Couldn't connect");
 		
-		$sql = sqlsrv_query($db, "Update Room Set Position='0,1' Where Name = 'Entrance3'");
-		$sql = sqlsrv_query($db, "Update Room Set Position='0,0' Where Name = 'Entrance2'");
-		$sql = sqlsrv_query($db, "Update Room Set Position='0,-1' Where Name = 'Entrance1'");
+		$sql = sqlsrv_query($db, "Exec SetEntranceTiles");
 		
 		if(isset($_POST['characters'])){
 			$sql = sqlsrv_query($db, "Update Player Set Active = 0 Where Name = '".$name."'");
@@ -67,7 +65,7 @@
 			
 			<?php
 				global $db;
-				$sql = sqlsrv_query($db, "SELECT Name FROM Player");
+				$sql = sqlsrv_query($db, "Exec GetPlayerNames");
 				while($row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC)){
 					echo '<option value="' . $row['Name'] . '">' . $row['Name'] . '</option>';
 				}
@@ -79,7 +77,7 @@
 	<div>
 	<?php
 		//Display Character Tile
-		$query = sqlsrv_query($db, "SELECT Image_Path FROM Player WHERE Name = '" .$name ."'");
+		$query = sqlsrv_query($db, "Exec GetPlayerImage '".$name."'");
 		$output = sqlsrv_fetch_array($query, SQLSRV_FETCH_ASSOC);
 		$imagePath = $output['Image_Path'];	
 		echo '<img class="CharBox" src="Characters/' . $imagePath . '" alt="' . $name . '" height="250" width="250">';
@@ -205,7 +203,7 @@
 	global $name;
 	global $db;
 	
-	$sql = "SELECT * FROM Player WHERE Active = 1 AND Name <> '".$name."'";
+	$sql = "Exec GetOtherPlayers '".$name."'";
 	$output = sqlsrv_query($db, $sql);
 	
 	echo 'Other Players';
@@ -231,7 +229,7 @@
 	if(isset($_POST['loseItem'])){
 		global $db;
 		$itemName = $_POST['loseItem'];
-		$sql = sqlsrv_query($db, "Update Item Set Owner_Name = NULL Where Name='".$itemName."'");
+		$sql = sqlsrv_query($db, "Exec RemoveItem '".$itemName."'");
 	}
 	
 	
@@ -242,13 +240,13 @@
 	
 		$name = $_SESSION['name'];
 	
-		$sql = sqlsrv_query($db, "SELECT TOP 1 * FROM Item Where [Owner_Name] Is NULL ORDER BY NEWID()");
+		$sql = sqlsrv_query($db, "Exec GetRandomItem");
 		$row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC);
 		
 		$itemName = $row['Name'];
 		$imagePath = $row['Image_Path'];
 		
-		$sql = "Update Item Set Owner_Name = '".$name."' Where Name='".$itemName."'";
+		$sql = "Exec SetItemOwner '".$itemName."','".$name."'";
 		sqlsrv_query($db, $sql);
 		
 	}
@@ -262,7 +260,7 @@
 	echo '<form method="post">';
 	while($row = sqlsrv_fetch_array($sql, SQLSRV_FETCH_ASSOC)){
 		$imagePath = $row['Image_Path'];
-		echo '<input name = "loseItem" value="'.$row['Name'].'" type=image src="Items/' . $imagePath . '" alt="' . $name . '" height="200" width="100">';
+		echo '<input name = "loseItem" value="'.$row['Name'].'" type=image src="Items/' . $imagePath . '" alt="' . $name . '" height="300" width="150">';
 	}
 	echo '</form>';
 	
@@ -279,53 +277,12 @@
 <?php
 
 	if(isset($_POST['reset'])){
-		resetAllStats();
-		resetItemOwners();
-		//resetPositions();
-		resetPlayers();
+		
+		global $db;
+		$sql = "Exec Reset";
+		$output = sqlsrv_query($db, $sql);
+		
 		$_SESSION['currentRoom'] = "";
-	}
-
-	function resetItemOwners(){
-		
-		global $db;
-		$sql = "Update Item Set [Owner_Name] = NULL";
-		$output = sqlsrv_query($db, $sql);
-	}
-	
-	function resetPlayers(){
-		
-		global $db;
-		$sql = "Update Player Set Active = 0";
-		$output = sqlsrv_query($db, $sql);
-	}
-	
-	function resetPositions(){
-		
-		global $db;
-		$sql = "Update Room Set [Position] = NULL";
-		$output = sqlsrv_query($db, $sql);
-	}
-	
-	function resetAllStats(){	
-		resetStat(3,2,2,2,"Brandon Jaspers");
-		resetStat(2,2,4,2,"Darrin Flash Williams");
-		resetStat(4,3,2,2,"Father Rhinehardt");
-		resetStat(2,4,2,2,"Heather Granville");
-		resetStat(4,2,3,2,"Jenny LeClerc");
-		resetStat(2,3,2,3,"Madame Zostra");
-		resetStat(2,3,2,3,"Missy Dubourde");
-		resetStat(2,2,4,2,"Ox Bellows");
-		resetStat(3,2,3,2,"Peter Akimoto");
-		resetStat(2,4,3,2,"Professor Longfellow");
-		resetStat(2,3,3,3,"Vivian Lopez");
-		resetStat(2,2,3,3,"Zoe Ingstrom");
-	}
-	
-	function resetStat($a, $b, $c, $d, $playerName){
-		global $db;
-		$sql = "Update Stats Set [Sanity_Index]=".$a.", [Knowledge_Index]=".$b.", [Speed_Index]=".$c.", [Might_Index]=".$d." WHERE Name = '".$playerName."'";
-		$output = sqlsrv_query($db, $sql);
 	}
 
 ?>
@@ -361,10 +318,10 @@
 
 
 <div id = 'getRoom'>
- 	<form method="post" id="form">
- 		<input type="submit"  name="getRoom" value="Get Room"><br>
- 		<input type="submit"  name="rotateRoom" value="Rotate Room"></br>
- 		<input type="submit"  name="refreshRoom" value="Refresh Room"></br>
+ 	<form method="post" id="form" class="well up">
+ 		<input type="submit"  class= "btn" name="getRoom" value="Get Room"><br>
+ 		<input type="submit"  class= "btn" name="rotateRoom" value="Rotate Room"></br>
+ 		<input type="submit"  class= "btn" name="refreshRoom" value="Set Room"></br>
  		<input id = "roomPosition" type="hidden" name="roomPosition">
  	</form>
  
